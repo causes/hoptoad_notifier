@@ -4,7 +4,7 @@ namespace :hoptoad do
   desc "Notify Hoptoad of a new deploy."
   task :deploy => :environment do
     require 'hoptoad_tasks'
-    HoptoadTasks.deploy(:rails_env      => ENV['TO'], 
+    HoptoadTasks.deploy(:rails_env      => ENV['TO'],
                         :scm_revision   => ENV['REVISION'],
                         :scm_repository => ENV['REPO'],
                         :local_username => ENV['USER'],
@@ -77,7 +77,9 @@ namespace :hoptoad do
 
       def exception_class
         exception_name = ENV['EXCEPTION'] || "HoptoadTestingException"
-        Object.const_get(exception_name)
+        klass = Object
+        exception_name.split("::").each{|o| klass = klass.const_get(o)}
+        klass
       rescue
         Object.const_set(exception_name, Class.new(Exception))
       end
